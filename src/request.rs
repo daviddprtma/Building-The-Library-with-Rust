@@ -18,3 +18,18 @@ pub fn api_request_all_rust_cycles() -> Result<Vec<RustSingleCycle>, Box<dyn Err
     let deserialised_response: Vec<RustSingleCycle> = serde_json::from_str(&response)?;
     Ok(deserialised_response)
 }
+
+pub fn api_request_single_rust_cycle (rust_version: &str,)-> Result<RustSingleCycle, Box<dyn Error>> {
+    let request_string = format!("https://endoflife.date/api/rust/{}.json", rust_version);
+
+    // Builds the client request
+    let client = Client::new();
+
+    // Our response body
+    let body = client.get(&request_string).header(ACCEPT, HEADER).send()?.bytes()?.to_vec();
+
+    // Our response string
+    let response = unsafe { String::from_utf8_unchecked(body) };
+    let deserialised_response: RustSingleCycle = serde_json::from_str(&response)?;
+    Ok(deserialised_response)
+}
